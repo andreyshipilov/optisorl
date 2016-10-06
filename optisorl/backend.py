@@ -32,8 +32,42 @@ class OptimizingThumbnailBackend(ThumbnailBackend):
                 return self.optimize_png(image_path)
             elif image_path.lower().endswith('.gif'):
                 return self.optimize_gif(image_path)
-            elif image_path.lower().endswith('.jpg'):
-                return self.optimize_jpg(image_path)
+            elif image_path.lower().endswith('.jpg') or image_path.lower().endswith('.jpeg'):
+                self.optimize_jpg(image_path)
+
+        def _create_alternative_resolutions(
+                self,
+                source_image,
+                geometry_string,
+                options,
+                name
+        ):
+            """
+            Optimizes thumbnails in alternative resolutions.
+            """
+            super(OptimizingThumbnailBackend, self)._create_alternative_resolutions(
+                source_image,
+                geometry_string,
+                options,
+                name
+            )
+
+            for resolution in settings.THUMBNAIL_ALTERNATIVE_RESOLUTIONS:
+                file_name, dot_file_ext = os.path.splitext(name)
+                thumbnail_name = '%(file_name)s%(suffix)s%(file_ext)s' % {
+                    'file_name': file_name,
+                    'suffix': '@%sx' % resolution,
+                    'file_ext': dot_file_ext
+                }
+                image_path = os.path.join(settings.MEDIA_ROOT, thumbnail_name)
+
+                if os.path.isfile(image_path):
+                    if image_path.lower().endswith('.png'):
+                        self.optimize_png(image_path)
+                    elif image_path.lower().endswith('.gif'):
+                        self.optimize_gif(image_path)
+                    elif image_path.lower().endswith('.jpg') or image_path.lower().endswith('.jpeg'):
+                        self.optimize_jpg(image_path)
 
     def optimize_png(self, path):
         binary_location = getattr(
