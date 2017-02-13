@@ -12,12 +12,11 @@ logger = logging.getLogger('optisorl')
 
 
 class OptimizingThumbnailBackend(ThumbnailBackend):
-
     def _create_thumbnail(
-        self,
-        source_image,
-        geometry_string, options,
-        thumbnail
+            self,
+            source_image,
+            geometry_string, options,
+            thumbnail
     ):
         """override so we have an opportunity to first optimize the
         resulting thumbnail before it gets saved."""
@@ -33,14 +32,14 @@ class OptimizingThumbnailBackend(ThumbnailBackend):
             elif image_path.lower().endswith('.gif'):
                 return self.optimize_gif(image_path)
             elif image_path.lower().endswith('.jpg') or image_path.lower().endswith('.jpeg'):
-                self.optimize_jpg(image_path)
+                return self.optimize_jpg(image_path)
 
     def _create_alternative_resolutions(
-        self,
-        source_image,
-        geometry_string,
-        options,
-        name
+            self,
+            source_image,
+            geometry_string,
+            options,
+            name
     ):
         """
         Optimizes thumbnails in alternative resolutions.
